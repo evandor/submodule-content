@@ -31,6 +31,10 @@ export function useContentService() {
     return db.deleteContent(url)
   }
 
+  const getContent = (url: string) => {
+    return db.getContent(url)
+  }
+
   const getContents = (): Promise<any[]> => {
     return db ? db.getContents() : Promise.resolve([])
   }
@@ -61,7 +65,8 @@ export function useContentService() {
     saveContent,
     getContents,
     deleteContent,
-    cleanUpContent
+    cleanUpContent,
+    getContent
   }
 
 }

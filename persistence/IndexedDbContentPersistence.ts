@@ -44,7 +44,11 @@ class IndexedDbContentPersistence implements ContentPersistence {
   }
 
   getContent(url: string): Promise<object> {
-    return Promise.reject("undefined");
+    const encodedUrl = btoa(url)
+    if (this.db) {
+      return this.db.get('content', encodedUrl)
+    }
+    return Promise.reject("db not ready (yet)")
   }
 
   getContents(): Promise<any[]> {
@@ -54,7 +58,7 @@ class IndexedDbContentPersistence implements ContentPersistence {
   saveContent(tab: Tab, text: string, metas: object, title: string, tabsetIds: string[]): Promise<any> {
     if (tab.url) {
       const encodedTabUrl = btoa(tab.url)
-      return this.db.put('content', {
+      return this.db.put(this.STORE_IDENT, {
         id: encodedTabUrl,
         expires: new Date().getTime() + 1000 * 60 * EXPIRE_DATA_PERIOD_IN_MINUTES,
         title,
@@ -72,9 +76,22 @@ class IndexedDbContentPersistence implements ContentPersistence {
     return Promise.reject("tab.url missing")
   }
 
-  updateContent(url: string): Promise<object> {
-    return Promise.reject("undefined");
-  }
+  // async updateContent(url: string): Promise<object> {
+  //   const encodedUrl = btoa(url)
+  //
+  //   const objectStore = this.db.transaction(this.STORE_IDENT, "readwrite").objectStore("content");
+  //   let cursor = await objectStore.openCursor()
+  //   let data = null
+  //   while (cursor) {
+  //     if (cursor.value.id === encodedUrl) {
+  //       data = cursor.value
+  //       data['expires'] = 0
+  //       objectStore.put(data, cursor.key)
+  //     }
+  //     cursor = await cursor.continue();
+  //   }
+  //   return Promise.resolve(data)
+  // }
 
   async cleanUpContent(fnc: (url: string) => boolean): Promise<SearchDoc[]> {
     const contentObjectStore = this.db.transaction("content", "readwrite").objectStore("content");
