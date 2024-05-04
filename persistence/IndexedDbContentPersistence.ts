@@ -22,7 +22,7 @@ class IndexedDbContentPersistence implements ContentPersistence {
   }
 
   private async initDatabase(): Promise<IDBPDatabase> {
-    console.debug(" about to initialize indexedDB")
+    console.debug(" about to initialize indexedDB (Content)")
     const ctx = this
     return await openDB("ContentDB", 1, {
       upgrade(db) {
