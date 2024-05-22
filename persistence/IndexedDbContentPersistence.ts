@@ -2,7 +2,7 @@ import {IDBPDatabase, openDB, deleteDB} from "idb";
 import _ from "lodash";
 import {Tab} from "src/tabsets/models/Tab";
 import ContentPersistence from "src/content/persistence/ContentPersistence";
-import {SearchDoc} from "src/models/SearchDoc";
+import {SearchDoc} from "src/search/models/SearchDoc";
 import {EXPIRE_DATA_PERIOD_IN_MINUTES} from "boot/constants";
 
 class IndexedDbContentPersistence implements ContentPersistence {

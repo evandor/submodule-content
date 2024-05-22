@@ -1,5 +1,5 @@
 import {Tab} from "src/tabsets/models/Tab";
-import {SearchDoc} from "src/models/SearchDoc";
+import {SearchDoc} from "src/search/models/SearchDoc";
 
 interface ContentPersistence {
 
