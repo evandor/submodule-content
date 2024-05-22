@@ -55,25 +55,22 @@ class IndexedDbContentPersistence implements ContentPersistence {
     return this.db.getAll(this.STORE_IDENT);
   }
 
-  saveContent(tab: Tab, text: string, metas: object, title: string, tabsetIds: string[]): Promise<any> {
-    if (tab.url) {
-      const encodedTabUrl = btoa(tab.url)
-      return this.db.put(this.STORE_IDENT, {
-        id: encodedTabUrl,
-        expires: new Date().getTime() + 1000 * 60 * EXPIRE_DATA_PERIOD_IN_MINUTES,
-        title,
-        url: tab.url,
-        content: text,
-        metas: metas,
-        tabsets: tabsetIds,
-        favIconUrl: tab.favIconUrl
-      }, encodedTabUrl)
-        .then((res) => {
-          // console.info(new Tab(uid(), tab), "saved content for url " + tab.url)
-          return res
-        })
-    }
-    return Promise.reject("tab.url missing")
+  saveContent(url: string, text: string, metas: object, title: string, tabsetIds: string[]): Promise<any> {
+    const encodedTabUrl = btoa(url)
+    return this.db.put(this.STORE_IDENT, {
+      id: encodedTabUrl,
+      expires: new Date().getTime() + 1000 * 60 * EXPIRE_DATA_PERIOD_IN_MINUTES,
+      title,
+      url: url,
+      content: text,
+      metas: metas,
+      tabsets: tabsetIds,
+      //favIconUrl: tab.favIconUrl
+    }, encodedTabUrl)
+      .then((res) => {
+        // console.info(new Tab(uid(), tab), "saved content for url " + tab.url)
+        return res
+      })
   }
 
   // async updateContent(url: string): Promise<object> {
@@ -117,7 +114,6 @@ class IndexedDbContentPersistence implements ContentPersistence {
     }
     return Promise.resolve(result)
   }
-
 
 
 }

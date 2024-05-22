@@ -1,6 +1,5 @@
 import {useUtils} from "src/core/services/Utils";
 import ContentPersistence from "src/content/persistence/ContentPersistence";
-import {Tab} from "src/tabsets/models/Tab";
 
 let db: ContentPersistence = null as unknown as ContentPersistence
 
@@ -23,8 +22,8 @@ export function useContentService() {
     initListeners()
   }
 
-  const saveContent = (tab: Tab, text: string, metas: object, title: string, tabsetIds: string[]): Promise<any> => {
-    return db.saveContent(tab,text,metas,title, tabsetIds)
+  const saveContent = (url: string, text: string, metas: object, title: string, tabsetIds: string[]): Promise<any> => {
+    return db.saveContent(url,text,metas,title, tabsetIds)
   }
 
   const deleteContent = (url: string) => {
