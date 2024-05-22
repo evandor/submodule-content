@@ -1,4 +1,4 @@
-import {useUtils} from "src/services/Utils";
+import {useUtils} from "src/core/services/Utils";
 import ContentPersistence from "src/content/persistence/ContentPersistence";
 import {Tab} from "src/tabsets/models/Tab";
 
