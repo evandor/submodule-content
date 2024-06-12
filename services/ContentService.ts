@@ -31,7 +31,7 @@ export function useContentService() {
   }
 
   const getContent = (url: string) => {
-    return db.getContent(url)
+    return db ? db.getContent(url) : ''
   }
 
   const getContents = (): Promise<any[]> => {
