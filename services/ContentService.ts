@@ -16,7 +16,7 @@ export function useContentService() {
   }
 
   const init = async (storage: ContentPersistence) => {
-    console.log(" ...initializing contentService as", storage.getServiceName())
+    console.debug(" ...initializing contentService as", storage.getServiceName())
     db = storage
     await db.init()
     initListeners()
