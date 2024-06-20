@@ -1,5 +1,7 @@
 import {useUtils} from "src/core/services/Utils";
 import ContentPersistence from "src/content/persistence/ContentPersistence";
+import {ContentItem} from "src/content/models/ContentItem";
+import AppEventDispatcher from "src/services/AppEventDispatcher";
 
 let db: ContentPersistence = null as unknown as ContentPersistence
 
@@ -22,8 +24,12 @@ export function useContentService() {
     initListeners()
   }
 
+  const populateSearch = async () => {
+    AppEventDispatcher.dispatchEvent('populate-from-content', await getContents())
+  }
+
   const saveContent = (url: string, text: string, metas: object, title: string, tabsetIds: string[]): Promise<any> => {
-    return db.saveContent(url,text,metas,title, tabsetIds)
+    return db.saveContent(url,new ContentItem("id", title, url, text, metas,  tabsetIds))
   }
 
   const deleteContent = (url: string) => {
@@ -34,7 +40,7 @@ export function useContentService() {
     return db ? db.getContent(url) : Promise.reject('no db')
   }
 
-  const getContents = (): Promise<any[]> => {
+  const getContents = (): Promise<ContentItem[]> => {
     return db ? db.getContents() : Promise.resolve([])
   }
   const cleanUpContent = (fnc: (url: string) => boolean) => {
@@ -65,7 +71,8 @@ export function useContentService() {
     getContents,
     deleteContent,
     cleanUpContent,
-    getContent
+    getContent,
+    populateSearch
   }
 
 }

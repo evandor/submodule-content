@@ -1,7 +1,7 @@
 import {IDBPDatabase, openDB, deleteDB} from "idb";
 import ContentPersistence from "src/content/persistence/ContentPersistence";
 import {SearchDoc} from "src/search/models/SearchDoc";
-import {EXPIRE_DATA_PERIOD_IN_MINUTES} from "boot/constants";
+import {ContentItem} from "src/content/models/ContentItem";
 
 class IndexedDbContentPersistence implements ContentPersistence {
 
@@ -10,7 +10,7 @@ class IndexedDbContentPersistence implements ContentPersistence {
   private db: IDBPDatabase = null as unknown as IDBPDatabase
 
   getServiceName(): string {
-    return "IndexedDbContentPersistence";
+    return this.constructor.name
   }
 
   async init() {
@@ -41,7 +41,7 @@ class IndexedDbContentPersistence implements ContentPersistence {
     return this.db.delete(this.STORE_IDENT, btoa(url))
   }
 
-  getContent(url: string): Promise<object> {
+  getContent(url: string): Promise<ContentItem> {
     const encodedUrl = btoa(url)
     if (this.db) {
       return this.db.get('content', encodedUrl)
@@ -49,22 +49,14 @@ class IndexedDbContentPersistence implements ContentPersistence {
     return Promise.reject("db not ready (yet)")
   }
 
-  getContents(): Promise<any[]> {
+  getContents(): Promise<ContentItem[]> {
     return this.db.getAll(this.STORE_IDENT);
   }
 
-  saveContent(url: string, text: string, metas: object, title: string, tabsetIds: string[]): Promise<any> {
+  saveContent(url: string, contentItem: ContentItem): Promise<any> {
     const encodedTabUrl = btoa(url)
-    return this.db.put(this.STORE_IDENT, {
-      id: encodedTabUrl,
-      expires: new Date().getTime() + 1000 * 60 * EXPIRE_DATA_PERIOD_IN_MINUTES,
-      title,
-      url: url,
-      content: text,
-      metas: metas,
-      tabsets: tabsetIds,
-      //favIconUrl: tab.favIconUrl
-    }, encodedTabUrl)
+
+    return this.db.put(this.STORE_IDENT, contentItem, encodedTabUrl)
       .then((res) => {
         // console.info(new Tab(uid(), tab), "saved content for url " + tab.url)
         return res

@@ -1,4 +1,5 @@
 import {SearchDoc} from "src/search/models/SearchDoc";
+import {ContentItem} from "src/content/models/ContentItem";
 
 interface ContentPersistence {
 
@@ -6,11 +7,15 @@ interface ContentPersistence {
 
   init(): Promise<any>
 
-  getContent(url: string):Promise<object>
-  deleteContent(url: string):Promise<void>
-  saveContent(url: string, text: string, metas: object, title: string, tabsetIds: string[]):Promise<any>
+  getContent(url: string): Promise<ContentItem>
+
+  deleteContent(url: string): Promise<void>
+
+  saveContent(url: string, contentItem: ContentItem): Promise<any>
+
   cleanUpContent(fnc: (url: string) => boolean): Promise<SearchDoc[]>
-  getContents(): Promise<any[]>
+
+  getContents(): Promise<ContentItem[]>
 
   compactDb(): Promise<any>
 
