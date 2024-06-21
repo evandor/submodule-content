@@ -92,7 +92,7 @@ class IndexedDbContentPersistence implements ContentPersistence {
           data.expires = 0
           contentObjectStore.put(data, contentCursor.key)
           result.push(new SearchDoc(
-            data.id, "", data.title, data.url, data.description, "", data.content, [], '', data.favIconUrl
+            data.id, "", data.title, data.url, data.description, "", data.content, data.favIconUrl, []
           ))
         } else {
           if (contentCursor.value.expires < new Date().getTime()) {

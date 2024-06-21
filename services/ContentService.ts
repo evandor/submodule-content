@@ -2,6 +2,7 @@ import {useUtils} from "src/core/services/Utils";
 import ContentPersistence from "src/content/persistence/ContentPersistence";
 import {ContentItem} from "src/content/models/ContentItem";
 import AppEventDispatcher from "src/services/AppEventDispatcher";
+import {SearchDoc} from "src/search/models/SearchDoc";
 
 let db: ContentPersistence = null as unknown as ContentPersistence
 
@@ -24,8 +25,33 @@ export function useContentService() {
     initListeners()
   }
 
-  const populateSearch = async () => {
-    AppEventDispatcher.dispatchEvent('populate-from-content', await getContents())
+  const populateSearch = async (existingUrls: string[]) => {
+    const contentItems = await getContents()
+    contentItems.forEach((c: ContentItem) => {
+      if (c.expires === 0 || existingUrls.indexOf(c.url) >= 0) {
+        AppEventDispatcher.dispatchEvent('add-to-search', {
+          name: '',
+          title: c.title || '',
+          url: c.url || '',
+          description: c.metas ? c.metas['description' as keyof object] : '',
+          content: c.content,
+          tabsets: c.tabsetIds,
+          favIconUrl: ''
+        })
+        // if (c.metas && c.metas['keywords']) {
+        //   searchDoc.keywords = c.metas['keywords']
+        // }
+        // const removed = fuse.value.remove((doc: any) => {
+        //   return doc.url === searchDoc.url
+        // })
+        // overwritten += removed.length
+        // fuse.value.add(searchDoc)
+        // urlSet.add(c.url)
+        // count++
+      } else {
+        // countFiltered++
+      }
+    })
   }
 
   const saveContent = (url: string, text: string, metas: object, title: string, tabsetIds: string[]): Promise<any> => {
@@ -36,7 +62,7 @@ export function useContentService() {
     return db.deleteContent(url)
   }
 
-  const getContent = (url: string) => {
+  const getContent = (url: string): Promise<ContentItem> => {
     return db ? db.getContent(url) : Promise.reject('no db')
   }
 
