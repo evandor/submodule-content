@@ -2,7 +2,6 @@ import {useUtils} from "src/core/services/Utils";
 import ContentPersistence from "src/content/persistence/ContentPersistence";
 import {ContentItem} from "src/content/models/ContentItem";
 import AppEventDispatcher from "src/services/AppEventDispatcher";
-import {SearchDoc} from "src/search/models/SearchDoc";
 
 let db: ContentPersistence = null as unknown as ContentPersistence
 

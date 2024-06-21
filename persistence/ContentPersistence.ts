@@ -13,7 +13,7 @@ interface ContentPersistence {
 
   saveContent(url: string, contentItem: ContentItem): Promise<any>
 
-  cleanUpContent(fnc: (url: string) => boolean): Promise<SearchDoc[]>
+  cleanUpContent(fnc: (url: string) => boolean): Promise<object[]>
 
   getContents(): Promise<ContentItem[]>
 

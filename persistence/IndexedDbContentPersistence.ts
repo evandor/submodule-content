@@ -1,6 +1,5 @@
 import {IDBPDatabase, openDB, deleteDB} from "idb";
 import ContentPersistence from "src/content/persistence/ContentPersistence";
-import {SearchDoc} from "src/search/models/SearchDoc";
 import {ContentItem} from "src/content/models/ContentItem";
 
 class IndexedDbContentPersistence implements ContentPersistence {
@@ -80,10 +79,10 @@ class IndexedDbContentPersistence implements ContentPersistence {
   //   return Promise.resolve(data)
   // }
 
-  async cleanUpContent(fnc: (url: string) => boolean): Promise<SearchDoc[]> {
+  async cleanUpContent(fnc: (url: string) => boolean): Promise<object[]> {
     const contentObjectStore = this.db.transaction("content", "readwrite").objectStore("content");
     let contentCursor = await contentObjectStore.openCursor()
-    let result: SearchDoc[] = []
+    let result: object[] = []
     while (contentCursor) {
       if (contentCursor.value.expires !== 0) {
         const exists: boolean = fnc(atob(contentCursor.key.toString()))//this.urlExistsInATabset(atob(contentCursor.key.toString()))
@@ -91,9 +90,18 @@ class IndexedDbContentPersistence implements ContentPersistence {
           const data = contentCursor.value
           data.expires = 0
           contentObjectStore.put(data, contentCursor.key)
-          result.push(new SearchDoc(
-            data.id, "", data.title, data.url, data.description, "", data.content, data.favIconUrl, []
-          ))
+          result.push({
+            id: data.id,
+            title: data.title,
+            url: data.url,
+            description: data.description,
+            content: data.content,
+            tabsets: [],
+            favIconUrl: data.favIconUrl
+          })
+          // result.push(new SearchDoc(
+          //   data.id, "", data.title, data.url, data.description, "", data.content, data.favIconUrl, []
+          // ))
         } else {
           if (contentCursor.value.expires < new Date().getTime()) {
             contentObjectStore.delete(contentCursor.key)
