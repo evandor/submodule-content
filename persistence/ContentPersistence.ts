@@ -1,4 +1,3 @@
-import {SearchDoc} from "src/search/models/SearchDoc";
 import {ContentItem} from "src/content/models/ContentItem";
 
 interface ContentPersistence {
