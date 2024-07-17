@@ -18,10 +18,10 @@ export function useContentService() {
   }
 
   const init = async (storage: ContentPersistence) => {
-    console.debug(" ...initializing contentService as", storage.getServiceName())
     db = storage
     await db.init()
     initListeners()
+    console.debug(` ...initialized content: Service`,'✅')
   }
 
   const populateSearch = async (existingUrls: string[]) => {
