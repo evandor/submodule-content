@@ -6,13 +6,13 @@ interface ContentPersistence {
 
   init(): Promise<any>
 
-  getContent(url: string): Promise<ContentItem>
+  getContent(tabId: string): Promise<ContentItem>
 
-  deleteContent(url: string): Promise<void>
+  deleteContent(tabId: string): Promise<void>
 
-  saveContent(url: string, contentItem: ContentItem): Promise<any>
+  saveContent(tabId: string, contentItem: ContentItem): Promise<any>
 
-  cleanUpContent(fnc: (url: string) => boolean): Promise<object[]>
+  cleanUpContent(fnc: (tabId: string) => boolean): Promise<object[]>
 
   getContents(): Promise<ContentItem[]>
 

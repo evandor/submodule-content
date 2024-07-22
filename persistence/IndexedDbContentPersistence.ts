@@ -1,4 +1,4 @@
-import {IDBPDatabase, openDB, deleteDB} from "idb";
+import {IDBPDatabase, openDB} from "idb";
 import ContentPersistence from "src/content/persistence/ContentPersistence";
 import {ContentItem} from "src/content/models/ContentItem";
 
@@ -35,14 +35,13 @@ class IndexedDbContentPersistence implements ContentPersistence {
     return Promise.resolve(undefined);
   }
 
-  deleteContent(url: string): Promise<void> {
-    return this.db.delete(this.STORE_IDENT, btoa(url))
+  deleteContent(tabId: string): Promise<void> {
+    return this.db.delete(this.STORE_IDENT, tabId)
   }
 
-  getContent(url: string): Promise<ContentItem> {
-    const encodedUrl = btoa(url)
+  getContent(tabId: string): Promise<ContentItem> {
     if (this.db) {
-      return this.db.get('content', encodedUrl)
+      return this.db.get('content', tabId)
     }
     return Promise.reject("db not ready (yet)")
   }
@@ -51,14 +50,8 @@ class IndexedDbContentPersistence implements ContentPersistence {
     return this.db.getAll(this.STORE_IDENT);
   }
 
-  saveContent(url: string, contentItem: ContentItem): Promise<any> {
-    const encodedTabUrl = btoa(url)
-
-    return this.db.put(this.STORE_IDENT, contentItem, encodedTabUrl)
-      .then((res) => {
-        // console.info(new Tab(uid(), tab), "saved content for url " + tab.url)
-        return res
-      })
+  async saveContent(tabId: string, contentItem: ContentItem): Promise<any> {
+    return await this.db.put(this.STORE_IDENT, contentItem, tabId)
   }
 
   // async updateContent(url: string): Promise<object> {
@@ -78,13 +71,13 @@ class IndexedDbContentPersistence implements ContentPersistence {
   //   return Promise.resolve(data)
   // }
 
-  async cleanUpContent(fnc: (url: string) => boolean): Promise<object[]> {
+  async cleanUpContent(fnc: (tabId: string) => boolean): Promise<object[]> {
     const contentObjectStore = this.db.transaction("content", "readwrite").objectStore("content");
     let contentCursor = await contentObjectStore.openCursor()
     let result: object[] = []
     while (contentCursor) {
       if (contentCursor.value.expires !== 0) {
-        const exists: boolean = fnc(atob(contentCursor.key.toString()))//this.urlExistsInATabset(atob(contentCursor.key.toString()))
+        const exists: boolean = fnc(contentCursor.key.toString())//this.urlExistsInATabset(atob(contentCursor.key.toString()))
         if (exists) {
           const data = contentCursor.value
           data.expires = 0
