@@ -16,7 +16,7 @@ export function useContentService() {
   const populateSearch = async (existingUrls: string[]) => {
     const contentItems = await getContents()
     contentItems.forEach((c: ContentItem) => {
-      if (c.expires === 0 || existingUrls.indexOf(c.url) >= 0) {
+      if (existingUrls.indexOf(c.url) >= 0) {
         AppEventDispatcher.dispatchEvent('add-to-search', {
           name: '',
           title: c.title || '',
