@@ -24,8 +24,8 @@ class IndexedDbContentPersistence implements ContentPersistence {
       upgrade(db) {
         if (!db.objectStoreNames.contains(ctx.STORE_IDENT)) {
           console.log("creating db " + ctx.STORE_IDENT)
-          let store = db.createObjectStore(ctx.STORE_IDENT);
-          store.createIndex("expires", "expires", {unique: false});
+          db.createObjectStore(ctx.STORE_IDENT);
+          //store.createIndex("expires", "expires", {unique: false});
         }
       }
     });

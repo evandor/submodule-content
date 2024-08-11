@@ -8,7 +8,7 @@ tabsets.net.
 In tabsets.net, for example, this submodule is added like this:
 
 ```
-git submodule add -b main https://github.com/evandor/submodule-features.git src/features
+git submodule add -b main https://github.com/evandor/submodule-content.git src/content
 ```
 
 ## Branches
@@ -17,6 +17,3 @@ git submodule add -b main https://github.com/evandor/submodule-features.git src/
 
 the default branch, used e.g. in tabsets
 
-### localstorage
-
-a branch without firebase, to be used in local-only environments like bookmrkx
