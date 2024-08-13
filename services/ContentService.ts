@@ -1,6 +1,6 @@
 import ContentPersistence from "src/content/persistence/ContentPersistence";
 import {ContentItem} from "src/content/models/ContentItem";
-import AppEventDispatcher from "src/services/AppEventDispatcher";
+import AppEventDispatcher from "src/app/AppEventDispatcher";
 
 let db: ContentPersistence = null as unknown as ContentPersistence
 
