@@ -39,7 +39,7 @@ class IndexedDbContentPersistence implements ContentPersistence {
     return this.db.delete(this.STORE_IDENT, tabId)
   }
 
-  getContent(tabId: string): Promise<ContentItem> {
+  getContent(tabId: string): Promise<ContentItem | undefined> {
     if (this.db) {
       return this.db.get('content', tabId)
     }

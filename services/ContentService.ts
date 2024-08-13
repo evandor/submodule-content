@@ -50,7 +50,7 @@ export function useContentService() {
     return db.deleteContent(tabId)
   }
 
-  const getContent = (tabId: string): Promise<ContentItem> => {
+  const getContent = (tabId: string): Promise<ContentItem | undefined> => {
     return db ? db.getContent(tabId) : Promise.reject('no db')
   }
 

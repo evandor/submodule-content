@@ -6,7 +6,7 @@ interface ContentPersistence {
 
   init(): Promise<any>
 
-  getContent(tabId: string): Promise<ContentItem>
+  getContent(tabId: string): Promise<ContentItem | undefined>
 
   deleteContent(tabId: string): Promise<void>
 

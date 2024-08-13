@@ -17,12 +17,3 @@ chrome.scripting.executeScript({
 });
 ```
 
-In the application, it can be called like this (here in the AddTabToTabsetCommand):
-
-```typescript
-const contentResult = await chrome.tabs.sendMessage(this.tab.chromeTabId, 'getContent')
-const tokens = ContentUtils.html2tokens(contentResult.html)
-content = [...tokens].join(" ")
-await useTabsetService().saveText(this.tab, content, contentResult.metas)
-
-```
