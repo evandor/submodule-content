@@ -72,13 +72,6 @@ export function useContentService() {
     // }
   }
 
-  async function resetListeners() {
-    // chrome.runtime.onMessage.removeListener(onMessageListener)
-    // chrome.tabs.onUpdated.removeListener(onUpdatedListener)
-  }
-
-
-
   return {
     init,
     saveContent,
