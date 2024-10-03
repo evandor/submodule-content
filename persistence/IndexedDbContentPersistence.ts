@@ -54,23 +54,6 @@ class IndexedDbContentPersistence implements ContentPersistence {
     return await this.db.put(this.STORE_IDENT, contentItem, tabId)
   }
 
-  // async updateContent(url: string): Promise<object> {
-  //   const encodedUrl = btoa(url)
-  //
-  //   const objectStore = this.db.transaction(this.STORE_IDENT, "readwrite").objectStore("content");
-  //   let cursor = await objectStore.openCursor()
-  //   let data = null
-  //   while (cursor) {
-  //     if (cursor.value.id === encodedUrl) {
-  //       data = cursor.value
-  //       data['expires'] = 0
-  //       objectStore.put(data, cursor.key)
-  //     }
-  //     cursor = await cursor.continue();
-  //   }
-  //   return Promise.resolve(data)
-  // }
-
   async cleanUpContent(fnc: (tabId: string) => boolean): Promise<object[]> {
     const contentObjectStore = this.db.transaction("content", "readwrite").objectStore("content");
     let contentCursor = await contentObjectStore.openCursor()
