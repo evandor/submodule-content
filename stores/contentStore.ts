@@ -6,7 +6,9 @@ import {CheerioAPI} from 'cheerio';
 import {TabReference, TabReferenceType} from "src/content/models/TabReference";
 import {uid} from "quasar";
 import {Readability} from '@mozilla/readability'
-import sanitize from "sanitize-html";
+import {useUtils} from "src/core/services/Utils";
+
+const { sanitizeAsHtml } = useUtils();
 
 export const useContentStore = defineStore('content', () => {
 
@@ -17,12 +19,12 @@ export const useContentStore = defineStore('content', () => {
   watchEffect(() => {
     currentTabReferences.value = []
     if (currentTabContent.value.trim().length > 0) {
-      const sanitized = sanitize(currentTabContent.value)
-      const $ = cheerio.load(sanitized)
+      const $ = cheerio.load(currentTabContent.value)
       checkLinks($);
       checkMeta($);
       checkScripts($);
 
+      const sanitized = sanitizeAsHtml(currentTabContent.value)
       const parser = new DOMParser();
       const reader = new Readability(parser.parseFromString(sanitized, "text/html"))
       const article = reader.parse()
