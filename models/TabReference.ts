@@ -3,7 +3,9 @@ export enum TabReferenceType {
   OPEN_GRAPH = "OPEN_GRAPH",
   META_DATA = "META_DATA",
   LINKING_DATA = "LINKING_DATA",
-  ORIGINAL_URL = "ORIGINAL_URL"
+  READING_MODE = "READING_MODE",
+  ANCHOR = "ANCHOR",
+  PARENT_CHAIN = "PARENT_CHAIN",
 }
 
 export enum TabReferenceStatus {
