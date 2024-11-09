@@ -6,9 +6,6 @@ import {CheerioAPI} from 'cheerio';
 import {TabReference, TabReferenceType} from "src/content/models/TabReference";
 import {uid} from "quasar";
 import {Readability} from '@mozilla/readability'
-import {useUtils} from "src/core/services/Utils";
-
-const {sanitizeAsHtml} = useUtils();
 
 class TabData {
   constructor(
