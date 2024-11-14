@@ -1,6 +1,7 @@
 export enum TabReferenceType {
   RSS = "RSS",
   OPEN_GRAPH = "OPEN_GRAPH",
+  OPEN_SEARCH = "OPEN_SEARCH",
   META_DATA = "META_DATA",
   LINKING_DATA = "LINKING_DATA",
   READING_MODE = "READING_MODE",

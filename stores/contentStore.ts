@@ -15,7 +15,7 @@ class TabData {
   ) {
   }
 
-  public toString = () : string => {
+  public toString = (): string => {
     return `TabData ('${this.url}', contentLength: ${this.content?.length}, storage: ${JSON.stringify(this.storage)})`;
   }
 }
@@ -105,6 +105,22 @@ export const useContentStore = defineStore('content', () => {
       if (rel && rel === "alternate" && type && type === "application/rss+xml" && href) {
         currentTabReferences.value.push(new TabReference(uid(), TabReferenceType.RSS, title || 'no title', [], href))
         //console.log("Found TabReference", currentTabReferences.value)
+      }
+      if (rel && rel === "search" && type && type === "application/opensearchdescription+xml" && href && currentTabUrl.value) {
+        try {
+          const theURL = new URL(currentTabUrl.value)
+          const useUrl = href.startsWith("http://") || href.startsWith("https://") ? href : theURL.protocol + "//" + theURL.host + href
+          console.log("analyse application/opensearchdescription+xml link: ", href, useUrl)
+          fetch(useUrl)
+            .then(res => res.text())
+            .then((text: string) => {
+              console.log("found text", text)
+              currentTabReferences.value.push(new TabReference(uid(), TabReferenceType.OPEN_SEARCH, "opensearch", [{xml: text}], href))
+            })
+        } catch (err) {
+          console.log("not able to create opensearch tabReference for", currentTabUrl.value)
+        }
+
       }
     }
   }
