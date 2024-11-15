@@ -7,6 +7,7 @@ export enum TabReferenceType {
   READING_MODE = "READING_MODE",
   ANCHOR = "ANCHOR",
   PARENT_CHAIN = "PARENT_CHAIN",
+  SOURCE = "SOURCE",
 }
 
 export enum TabReferenceStatus {
