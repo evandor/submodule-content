@@ -1,5 +1,5 @@
 import {defineStore} from 'pinia';
-import {ref, watchEffect} from "vue";
+import {computed, ref, watchEffect} from "vue";
 
 import * as cheerio from 'cheerio';
 import {CheerioAPI} from 'cheerio';
@@ -7,13 +7,26 @@ import {TabReference, TabReferenceType} from "src/content/models/TabReference";
 import {uid} from "quasar";
 import {Readability} from '@mozilla/readability'
 
+/**
+ * this content store is meant to track transient state of the currently opened tab.
+ *
+ * Once the current content of a tab is set by calling setCurrentTabContent, the content
+ * will be analysed.
+ */
 export const useContentStore = defineStore('content', () => {
 
   const currentTabContent = ref<string>('')
-  const currentTabStorage = ref<object>({})
   const currentTabUrl = ref<string | undefined>(undefined)
   const currentTabArticle = ref<object | undefined>(undefined)
   const currentTabReferences = ref<TabReference[]>([])
+
+  const setCurrentTabContent = (content: string | undefined) => {
+    content ? currentTabContent.value = content : ''
+  }
+
+  const setCurrentTabUrl = (url: string | undefined) => {
+    currentTabUrl.value = url
+  }
 
   watchEffect(async () => {
     currentTabReferences.value = []
@@ -159,38 +172,18 @@ export const useContentStore = defineStore('content', () => {
     }
   }
 
-  // const setBrowserTabData = (chromeTab: chrome.tabs.Tab, data: object) => {
-  //   currentTabUrl.value = chromeTab.url
-  //   currentTabContent.value = data['html' as keyof object] || ''
-  //   currentTabStorage.value = data['storage' as keyof object] || {}
-  //   if (chromeTab.id) {
-  //     tabData.value.set(chromeTab.id, new TabData(currentTabUrl.value, currentTabContent.value, currentTabStorage.value))
-  //   }
-  // }
-
-  // const tabActivated = (tabId: number) => {
-  //   if (tabData.value.has(tabId)) {
-  //     const data = tabData.value.get(tabId) as TabData
-  //     currentTabUrl.value = data.url
-  //     currentTabContent.value = data.content || ''
-  //     currentTabStorage.value = data.storage || {}
-  //     return true
-  //   }
-  //   return false
-  // }
-
   const resetCurrentTabArticle = () => currentTabArticle.value = undefined
+
+  const getCurrentTabUrl = computed((): string | undefined  => {
+    return currentTabUrl.value
+  })
 
   return {
     currentTabArticle,
     resetCurrentTabArticle,
-    currentTabContent,
-    currentTabUrl,
-    currentTabReferences,
-    currentTabStorage
-    //setBrowserTabData,
-    //removeBrowserTabData,
-    //tabData,
-    //tabActivated
+    setCurrentTabContent,
+    setCurrentTabUrl,
+    getCurrentTabUrl,
+    currentTabReferences
   }
 })
