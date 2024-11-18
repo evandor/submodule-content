@@ -1,6 +1,7 @@
 import ContentPersistence from "src/content/persistence/ContentPersistence";
 import {ContentItem} from "src/content/models/ContentItem";
 import AppEventDispatcher from "src/app/AppEventDispatcher";
+import {Tab} from "src/tabsets/models/Tab";
 
 let db: ContentPersistence = null as unknown as ContentPersistence
 
@@ -42,8 +43,8 @@ export function useContentService() {
     })
   }
 
-  const saveContent = (tabId: string, text: string, metas: object, title: string, tabsetIds: string[]): Promise<any> => {
-    return db.saveContent(tabId,new ContentItem("id", title, "url", text, metas,  tabsetIds))
+  const saveContent = (tab: Tab, text: string, metas: object, title: string, tabsetIds: string[]): Promise<any> => {
+    return db.saveContent(tab.id,new ContentItem(tab.id, title, tab.url || '', text, metas,  tabsetIds))
   }
 
   const deleteContent = (tabId: string) => {
@@ -59,6 +60,10 @@ export function useContentService() {
   }
   const cleanUpContent = (fnc: (tabId: string) => boolean) => {
     return db.cleanUpContent(fnc)
+  }
+
+  const getContentFor = (url: string): Promise<ContentItem | undefined> => {
+    return db.getContentFor(url)
   }
 
 
@@ -79,6 +84,7 @@ export function useContentService() {
     deleteContent,
     cleanUpContent,
     getContent,
+    getContentFor,
     populateSearch
   }
 

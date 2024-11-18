@@ -14,6 +14,8 @@ interface ContentPersistence {
 
   cleanUpContent(fnc: (tabId: string) => boolean): Promise<object[]>
 
+  getContentFor(url:string): Promise<ContentItem | undefined>
+
   getContents(): Promise<ContentItem[]>
 
   compactDb(): Promise<any>

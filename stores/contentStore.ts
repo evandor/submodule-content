@@ -7,19 +7,6 @@ import {TabReference, TabReferenceType} from "src/content/models/TabReference";
 import {uid} from "quasar";
 import {Readability} from '@mozilla/readability'
 
-class TabData {
-  constructor(
-    public url?: string,
-    public content?: string,
-    public storage?: object
-  ) {
-  }
-
-  public toString = (): string => {
-    return `TabData ('${this.url}', contentLength: ${this.content?.length}, storage: ${JSON.stringify(this.storage)})`;
-  }
-}
-
 export const useContentStore = defineStore('content', () => {
 
   const currentTabContent = ref<string>('')
@@ -27,8 +14,6 @@ export const useContentStore = defineStore('content', () => {
   const currentTabUrl = ref<string | undefined>(undefined)
   const currentTabArticle = ref<object | undefined>(undefined)
   const currentTabReferences = ref<TabReference[]>([])
-  const tabData = ref<Map<number, TabData>>(new Map())
-  // const currentLocalStorage = ref<object>({})
 
   watchEffect(async () => {
     currentTabReferences.value = []
@@ -174,29 +159,25 @@ export const useContentStore = defineStore('content', () => {
     }
   }
 
-  const setBrowserTabData = (chromeTab: chrome.tabs.Tab, data: object) => {
-    currentTabUrl.value = chromeTab.url
-    currentTabContent.value = data['html' as keyof object] || ''
-    currentTabStorage.value = data['storage' as keyof object] || {}
-    if (chromeTab.id) {
-      tabData.value.set(chromeTab.id, new TabData(currentTabUrl.value, currentTabContent.value, currentTabStorage.value))
-    }
-  }
+  // const setBrowserTabData = (chromeTab: chrome.tabs.Tab, data: object) => {
+  //   currentTabUrl.value = chromeTab.url
+  //   currentTabContent.value = data['html' as keyof object] || ''
+  //   currentTabStorage.value = data['storage' as keyof object] || {}
+  //   if (chromeTab.id) {
+  //     tabData.value.set(chromeTab.id, new TabData(currentTabUrl.value, currentTabContent.value, currentTabStorage.value))
+  //   }
+  // }
 
-  const removeBrowserTabData = (tabId: number) => {
-    tabData.value.delete(tabId)
-  }
-
-  const tabActivated = (tabId: number) => {
-    if (tabData.value.has(tabId)) {
-      const data = tabData.value.get(tabId) as TabData
-      currentTabUrl.value = data.url
-      currentTabContent.value = data.content || ''
-      currentTabStorage.value = data.storage || {}
-      return true
-    }
-    return false
-  }
+  // const tabActivated = (tabId: number) => {
+  //   if (tabData.value.has(tabId)) {
+  //     const data = tabData.value.get(tabId) as TabData
+  //     currentTabUrl.value = data.url
+  //     currentTabContent.value = data.content || ''
+  //     currentTabStorage.value = data.storage || {}
+  //     return true
+  //   }
+  //   return false
+  // }
 
   const resetCurrentTabArticle = () => currentTabArticle.value = undefined
 
@@ -206,10 +187,10 @@ export const useContentStore = defineStore('content', () => {
     currentTabContent,
     currentTabUrl,
     currentTabReferences,
-    currentTabStorage,
-    setBrowserTabData,
-    removeBrowserTabData,
-    tabData,
-    tabActivated
+    currentTabStorage
+    //setBrowserTabData,
+    //removeBrowserTabData,
+    //tabData,
+    //tabActivated
   }
 })

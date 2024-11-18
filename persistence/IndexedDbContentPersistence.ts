@@ -20,12 +20,17 @@ class IndexedDbContentPersistence implements ContentPersistence {
 
   private async initDatabase(): Promise<IDBPDatabase> {
     const ctx = this
-    return await openDB("ContentDB", 1, {
-      upgrade(db) {
+    return await openDB("ContentDB", 2, {
+      upgrade(db, oldVersion, newVersion, transaction, event) {
+        let store = null // create or use existing
         if (!db.objectStoreNames.contains(ctx.STORE_IDENT)) {
           console.log("creating db " + ctx.STORE_IDENT)
-          db.createObjectStore(ctx.STORE_IDENT);
-          //store.createIndex("expires", "expires", {unique: false});
+          store = db.createObjectStore(ctx.STORE_IDENT);
+        } else {
+          store = transaction.objectStore(ctx.STORE_IDENT);
+        }
+        if (!store.indexNames.contains("url")) {
+          store.createIndex("url", "url", {unique: false});
         }
       }
     });
@@ -48,6 +53,13 @@ class IndexedDbContentPersistence implements ContentPersistence {
 
   getContents(): Promise<ContentItem[]> {
     return this.db.getAll(this.STORE_IDENT);
+  }
+
+  async getContentFor(url:string): Promise<ContentItem | undefined> {
+    const res = this.db.getAllFromIndex(this.STORE_IDENT, "url", url)
+    return res.then((hits: ContentItem[]) => {
+      return hits.length > 0 ? hits[0] : undefined
+    })
   }
 
   async saveContent(tabId: string, contentItem: ContentItem): Promise<any> {
