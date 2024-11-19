@@ -178,10 +178,15 @@ export const useContentStore = defineStore('content', () => {
     return currentTabUrl.value
   })
 
+  const getCurrentTabContent = computed((): string | undefined  => {
+    return currentTabContent.value
+  })
+
   return {
     currentTabArticle,
     resetCurrentTabArticle,
     setCurrentTabContent,
+    getCurrentTabContent,
     setCurrentTabUrl,
     getCurrentTabUrl,
     currentTabReferences
