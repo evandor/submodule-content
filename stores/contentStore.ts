@@ -50,9 +50,6 @@ export const useContentStore = defineStore('content', () => {
         }
         const protocol = currentTabUrl.value.split("://")[0]
         const pathSplit = currentTabUrl.value.split("://")[1].split("/").filter(p => p.trim() !== '')
-        //const pathSplit = currentTabUrl.value.split("/").filter(p => p.trim() !== '')
-        // console.log("pathSplit", currentTabUrl.value.split("/"))
-        // console.log("pathSplit", pathSplit)
         const parentChainData = []
         var initialLength = pathSplit.length
         for (var i = 0; i < initialLength; i++) {
@@ -100,7 +97,7 @@ export const useContentStore = defineStore('content', () => {
       const type = $(elem).attr("type")
       const title = $(elem).attr("title")
       const href = $(elem).attr("href")
-      if (rel && rel === "alternate" && type && type === "application/rss+xml" && href) {
+      if (rel && rel === "alternate" && type && (type === "application/rss+xml" || type === "application/atom+xml") && href) {
         currentTabReferences.value.push(new TabReference(uid(), TabReferenceType.RSS, title || 'no title', [], href))
         //console.log("Found TabReference", currentTabReferences.value)
       }
