@@ -6,6 +6,8 @@ import {CheerioAPI} from 'cheerio';
 import {TabReference, TabReferenceType} from "src/content/models/TabReference";
 import {uid} from "quasar";
 import {Readability} from '@mozilla/readability'
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
+import {TabAndTabsetId} from "src/tabsets/models/TabAndTabsetId";
 
 /**
  * this content store is meant to track transient state of the currently opened tab.
@@ -87,6 +89,16 @@ export const useContentStore = defineStore('content', () => {
           currentTabReferences.value.push(new TabReference(uid(), TabReferenceType.PARENT_CHAIN, "Parent Chain for " + currentTabUrl.value,
             parentChainData, currentTabUrl.value))
         }
+
+        // update existing tabs with this url
+        useTabsetsStore().tabsForUrl(currentTabUrl.value).forEach((tabAndTsId: TabAndTabsetId) => {
+          const ts = useTabsetsStore().getTabset(tabAndTsId.tabsetId)
+          if (ts) {
+            console.log(`setting tabReferences for tab url '${tabAndTsId.tab.url}' to ${JSON.stringify(currentTabReferences.value)}`)
+            tabAndTsId.tab.tabReferences = currentTabReferences.value
+            useTabsetsStore().saveTabset(ts)
+          }
+        })
       }
     }
   })
@@ -98,7 +110,14 @@ export const useContentStore = defineStore('content', () => {
       const title = $(elem).attr("title")
       const href = $(elem).attr("href")
       if (rel && rel === "alternate" && type && (type === "application/rss+xml" || type === "application/atom+xml") && href) {
-        currentTabReferences.value.push(new TabReference(uid(), TabReferenceType.RSS, title || 'no title', [], href))
+        let useHref = href
+        if (href.startsWith("/")) {
+          try {
+            const theURL = new URL(currentTabUrl.value || '')
+            useHref = theURL.protocol + "//" + theURL.hostname + href
+          } catch(e) {}
+        }
+        currentTabReferences.value.push(new TabReference(uid(), TabReferenceType.RSS, title || 'no title', [], useHref))
         //console.log("Found TabReference", currentTabReferences.value)
       }
       if (rel && rel === "search" && type && type === "application/opensearchdescription+xml" && href && currentTabUrl.value) {
@@ -111,6 +130,7 @@ export const useContentStore = defineStore('content', () => {
             .then((text: string) => {
               console.log("found text", text)
               currentTabReferences.value.push(new TabReference(uid(), TabReferenceType.OPEN_SEARCH, "opensearch", [{xml: text}], href))
+              console.log("Found TabReference", currentTabReferences.value)
             })
         } catch (err) {
           console.log("not able to create opensearch tabReference for", currentTabUrl.value)
@@ -171,11 +191,11 @@ export const useContentStore = defineStore('content', () => {
 
   const resetCurrentTabArticle = () => currentTabArticle.value = undefined
 
-  const getCurrentTabUrl = computed((): string | undefined  => {
+  const getCurrentTabUrl = computed((): string | undefined => {
     return currentTabUrl.value
   })
 
-  const getCurrentTabContent = computed((): string | undefined  => {
+  const getCurrentTabContent = computed((): string | undefined => {
     return currentTabContent.value
   })
 
