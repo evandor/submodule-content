@@ -48,10 +48,10 @@ export const useContentStore = defineStore('content', () => {
       if (currentTabUrl.value && currentTabUrl.value.indexOf("://") >= 0) { // TODO can this be outdated?
         const anchorSplit = currentTabUrl.value.split("#")
         if (anchorSplit.length === 2) {
-          currentTabReferences.value.push(new TabReference(uid(), TabReferenceType.ANCHOR, anchorSplit[1], [], currentTabUrl.value))
+          currentTabReferences.value.push(new TabReference(uid(), TabReferenceType.ANCHOR, anchorSplit[1]!, [], currentTabUrl.value))
         }
         const protocol = currentTabUrl.value.split("://")[0]
-        const pathSplit = currentTabUrl.value.split("://")[1].split("/").filter(p => p.trim() !== '')
+        const pathSplit = currentTabUrl.value.split("://")[1]!.split("/").filter(p => p.trim() !== '')
         const parentChainData = []
         var initialLength = pathSplit.length
         for (var i = 0; i < initialLength; i++) {
