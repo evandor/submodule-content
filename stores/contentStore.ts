@@ -94,7 +94,7 @@ export const useContentStore = defineStore('content', () => {
         useTabsetsStore().tabsForUrl(currentTabUrl.value).forEach((tabAndTsId: TabAndTabsetId) => {
           const ts = useTabsetsStore().getTabset(tabAndTsId.tabsetId)
           if (ts) {
-            console.log(`setting tabReferences for tab url '${tabAndTsId.tab.url}' to ${JSON.stringify(currentTabReferences.value)}`)
+            // console.log(`setting tabReferences for tab url '${tabAndTsId.tab.url}' to ${JSON.stringify(currentTabReferences.value)}`)
             tabAndTsId.tab.tabReferences = currentTabReferences.value
             useTabsetsStore().saveTabset(ts)
           }
