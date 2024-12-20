@@ -18,12 +18,19 @@ import {TabAndTabsetId} from "src/tabsets/models/TabAndTabsetId";
 export const useContentStore = defineStore('content', () => {
 
   const currentTabContent = ref<string>('')
+  const currentTabMetas = ref<object>({})
   const currentTabUrl = ref<string | undefined>(undefined)
   const currentTabArticle = ref<object | undefined>(undefined)
   const currentTabReferences = ref<TabReference[]>([])
 
   const setCurrentTabContent = (content: string | undefined) => {
+    console.debug("setting current tab content with length ${content?.length}")
     content ? currentTabContent.value = content : ''
+  }
+
+  const setCurrentTabMetas = (metas: object = {}) => {
+    console.debug("setting current tab metas", metas)
+    currentTabMetas.value = metas
   }
 
   const setCurrentTabUrl = (url: string | undefined) => {
@@ -115,7 +122,9 @@ export const useContentStore = defineStore('content', () => {
           try {
             const theURL = new URL(currentTabUrl.value || '')
             useHref = theURL.protocol + "//" + theURL.hostname + href
-          } catch(e) {}
+          } catch(e) {
+            // ignore
+          }
         }
         currentTabReferences.value.push(new TabReference(uid(), TabReferenceType.RSS, title || 'no title', [], useHref))
         //console.log("Found TabReference", currentTabReferences.value)
@@ -144,7 +153,7 @@ export const useContentStore = defineStore('content', () => {
     const openGraphRefs: object[] = []
     const metadataRefs: object[] = []
 
-    function addFromMeta(identifier: string, name: string | undefined | string, content: string | undefined) {
+    function addFromMeta(identifier: string, name: string | undefined, content: string | undefined) {
       if (name && name === identifier && content) {
         metadataRefs.push({name, content})
         //console.log("Found TabReference for meta data", name, content)
@@ -195,15 +204,16 @@ export const useContentStore = defineStore('content', () => {
     return currentTabUrl.value
   })
 
-  const getCurrentTabContent = computed((): string | undefined => {
-    return currentTabContent.value
-  })
+  const getCurrentTabContent = computed((): string | undefined => currentTabContent.value)
+  const getCurrentTabMetas = computed((): object => currentTabMetas.value)
 
   return {
     currentTabArticle,
     resetCurrentTabArticle,
     setCurrentTabContent,
     getCurrentTabContent,
+    setCurrentTabMetas,
+    getCurrentTabMetas,
     setCurrentTabUrl,
     getCurrentTabUrl,
     currentTabReferences

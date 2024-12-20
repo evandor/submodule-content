@@ -43,7 +43,8 @@ export function useContentService() {
   }
 
   const saveContent = (tabId:  string, tabUrl: string, text: string, metas: object, title: string, tabsetIds: string[]): Promise<any> => {
-    return db.saveContent(tabId, new ContentItem(tabId, title, tabUrl || '', text, metas,  tabsetIds))
+    console.debug("saving content for tabId", tabId, metas)
+    return db.saveContent(tabId, JSON.parse(JSON.stringify(new ContentItem(tabId, title, tabUrl || '', text, metas,  tabsetIds))))
   }
 
   const deleteContent = (tabId: string) => {
