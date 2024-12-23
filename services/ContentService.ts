@@ -1,16 +1,15 @@
-import ContentPersistence from "src/content/persistence/ContentPersistence";
-import {ContentItem} from "src/content/models/ContentItem";
-import AppEventDispatcher from "src/app/AppEventDispatcher";
+import ContentPersistence from 'src/content/persistence/ContentPersistence'
+import { ContentItem } from 'src/content/models/ContentItem'
+import AppEventDispatcher from 'src/app/AppEventDispatcher'
 
 let db: ContentPersistence = null as unknown as ContentPersistence
 
 export function useContentService() {
-
   const init = async (storage: ContentPersistence) => {
     db = storage
     await db.init()
     initListeners()
-    console.debug(` ...initialized content: Service`,'✅')
+    console.debug(` ...initialized content: Service`, '✅')
   }
 
   const populateSearch = async (existingUrls: string[]) => {
@@ -24,7 +23,7 @@ export function useContentService() {
           description: c.metas ? c.metas['description' as keyof object] : '',
           content: c.content,
           tabsets: c.tabsetIds,
-          favIconUrl: ''
+          favIconUrl: '',
         })
         // if (c.metas && c.metas['keywords']) {
         //   searchDoc.keywords = c.metas['keywords']
@@ -42,9 +41,21 @@ export function useContentService() {
     })
   }
 
-  const saveContent = (tabId:  string, tabUrl: string, text: string, metas: object, title: string, tabsetIds: string[]): Promise<any> => {
-    console.debug("saving content for tabId", tabId, metas)
-    return db.saveContent(tabId, JSON.parse(JSON.stringify(new ContentItem(tabId, title, tabUrl || '', text, metas,  tabsetIds))))
+  const saveContent = (
+    tabId: string,
+    tabUrl: string,
+    text: string,
+    metas: object,
+    title: string,
+    tabsetIds: string[],
+  ): Promise<any> => {
+    console.debug('saving content for tabId', tabId, metas)
+    return db.saveContent(
+      tabId,
+      JSON.parse(
+        JSON.stringify(new ContentItem(tabId, title, tabUrl || '', text, metas, tabsetIds)),
+      ),
+    )
   }
 
   const deleteContent = (tabId: string) => {
@@ -66,8 +77,6 @@ export function useContentService() {
     return db.getContentFor(url)
   }
 
-
-
   const initListeners = () => {
     // console.log("*** init Listeners ***")
     // if (inBexMode()) {
@@ -85,9 +94,6 @@ export function useContentService() {
     cleanUpContent,
     getContent,
     getContentFor,
-    populateSearch
+    populateSearch,
   }
-
 }
-
-

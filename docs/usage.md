@@ -3,9 +3,8 @@ In the application, it can be called like this (here in the AddTabToTabsetComman
 ```typescript
 const contentResult = await chrome.tabs.sendMessage(this.tab.chromeTabId, 'getExcerpt')
 const tokens = ContentUtils.html2tokens(contentResult.html)
-content = [...tokens].join(" ")
+content = [...tokens].join(' ')
 await useTabsetService().saveText(this.tab, content, contentResult.metas)
-
 ```
 
 This will create an entry like this

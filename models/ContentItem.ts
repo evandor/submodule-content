@@ -7,10 +7,8 @@ export class ContentItem {
     public url: string,
     public content: string,
     public metas: object,
-    public tabsetIds: string[]
+    public tabsetIds: string[],
   ) {
     this.created = new Date().getTime()
   }
-
-
 }

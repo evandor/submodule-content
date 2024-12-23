@@ -1,10 +1,9 @@
-import {IDBPDatabase, openDB} from "idb";
-import ContentPersistence from "src/content/persistence/ContentPersistence";
-import {ContentItem} from "src/content/models/ContentItem";
+import { IDBPDatabase, openDB } from 'idb'
+import ContentPersistence from 'src/content/persistence/ContentPersistence'
+import { ContentItem } from 'src/content/models/ContentItem'
 
 class IndexedDbContentPersistence implements ContentPersistence {
-
-  private STORE_IDENT = 'content';
+  private STORE_IDENT = 'content'
 
   private db: IDBPDatabase = null as unknown as IDBPDatabase
 
@@ -14,30 +13,30 @@ class IndexedDbContentPersistence implements ContentPersistence {
 
   async init() {
     this.db = await this.initDatabase()
-    console.debug(` ...initialized content: ${this.getServiceName()}`,'✅')
+    console.debug(` ...initialized content: ${this.getServiceName()}`, '✅')
     return Promise.resolve()
   }
 
   private async initDatabase(): Promise<IDBPDatabase> {
     const ctx = this
-    return await openDB("ContentDB", 2, {
+    return await openDB('ContentDB', 2, {
       upgrade(db, oldVersion, newVersion, transaction, event) {
         let store = null // create or use existing
         if (!db.objectStoreNames.contains(ctx.STORE_IDENT)) {
-          console.log("creating db " + ctx.STORE_IDENT)
-          store = db.createObjectStore(ctx.STORE_IDENT);
+          console.log('creating db ' + ctx.STORE_IDENT)
+          store = db.createObjectStore(ctx.STORE_IDENT)
         } else {
-          store = transaction.objectStore(ctx.STORE_IDENT);
+          store = transaction.objectStore(ctx.STORE_IDENT)
         }
-        if (!store.indexNames.contains("url")) {
-          store.createIndex("url", "url", {unique: false});
+        if (!store.indexNames.contains('url')) {
+          store.createIndex('url', 'url', { unique: false })
         }
-      }
-    });
+      },
+    })
   }
 
   compactDb(): Promise<any> {
-    return Promise.resolve(undefined);
+    return Promise.resolve(undefined)
   }
 
   deleteContent(tabId: string): Promise<void> {
@@ -48,15 +47,15 @@ class IndexedDbContentPersistence implements ContentPersistence {
     if (this.db) {
       return this.db.get('content', tabId)
     }
-    return Promise.reject("db not ready (yet)")
+    return Promise.reject('db not ready (yet)')
   }
 
   getContents(): Promise<ContentItem[]> {
-    return this.db.getAll(this.STORE_IDENT);
+    return this.db.getAll(this.STORE_IDENT)
   }
 
-  async getContentFor(url:string): Promise<ContentItem | undefined> {
-    const res = this.db.getAllFromIndex(this.STORE_IDENT, "url", url)
+  async getContentFor(url: string): Promise<ContentItem | undefined> {
+    const res = this.db.getAllFromIndex(this.STORE_IDENT, 'url', url)
     return res.then((hits: ContentItem[]) => {
       return hits.length > 0 ? hits[0] : undefined
     })
@@ -67,12 +66,12 @@ class IndexedDbContentPersistence implements ContentPersistence {
   }
 
   async cleanUpContent(fnc: (tabId: string) => boolean): Promise<object[]> {
-    const contentObjectStore = this.db.transaction("content", "readwrite").objectStore("content");
+    const contentObjectStore = this.db.transaction('content', 'readwrite').objectStore('content')
     let contentCursor = await contentObjectStore.openCursor()
     let result: object[] = []
     while (contentCursor) {
       if (contentCursor.value.expires !== 0) {
-        const exists: boolean = fnc(contentCursor.key.toString())//this.urlExistsInATabset(atob(contentCursor.key.toString()))
+        const exists: boolean = fnc(contentCursor.key.toString()) //this.urlExistsInATabset(atob(contentCursor.key.toString()))
         if (exists) {
           const data = contentCursor.value
           data.expires = 0
@@ -84,7 +83,7 @@ class IndexedDbContentPersistence implements ContentPersistence {
             description: data.description,
             content: data.content,
             tabsets: [],
-            favIconUrl: data.favIconUrl
+            favIconUrl: data.favIconUrl,
           })
           // result.push(new SearchDoc(
           //   data.id, "", data.title, data.url, data.description, "", data.content, data.favIconUrl, []
@@ -95,12 +94,10 @@ class IndexedDbContentPersistence implements ContentPersistence {
           }
         }
       }
-      contentCursor = await contentCursor.continue();
+      contentCursor = await contentCursor.continue()
     }
     return Promise.resolve(result)
   }
-
-
 }
 
 export default new IndexedDbContentPersistence()

@@ -1,7 +1,6 @@
-import {ContentItem} from "src/content/models/ContentItem";
+import { ContentItem } from 'src/content/models/ContentItem'
 
 interface ContentPersistence {
-
   getServiceName(): string
 
   init(): Promise<any>
@@ -14,12 +13,11 @@ interface ContentPersistence {
 
   cleanUpContent(fnc: (tabId: string) => boolean): Promise<object[]>
 
-  getContentFor(url:string): Promise<ContentItem | undefined>
+  getContentFor(url: string): Promise<ContentItem | undefined>
 
   getContents(): Promise<ContentItem[]>
 
   compactDb(): Promise<any>
-
 }
 
-export default ContentPersistence;
+export default ContentPersistence
