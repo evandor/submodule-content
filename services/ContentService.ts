@@ -1,6 +1,6 @@
-import ContentPersistence from 'src/content/persistence/ContentPersistence'
-import { ContentItem } from 'src/content/models/ContentItem'
 import AppEventDispatcher from 'src/app/AppEventDispatcher'
+import { ContentItem } from 'src/content/models/ContentItem'
+import ContentPersistence from 'src/content/persistence/ContentPersistence'
 
 let db: ContentPersistence = null as unknown as ContentPersistence
 

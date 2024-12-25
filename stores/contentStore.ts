@@ -1,13 +1,12 @@
-import { defineStore } from 'pinia'
-import { computed, ref, watchEffect } from 'vue'
-
+import { Readability } from '@mozilla/readability'
 import * as cheerio from 'cheerio'
 import { CheerioAPI } from 'cheerio'
-import { TabReference, TabReferenceType } from 'src/content/models/TabReference'
+import { defineStore } from 'pinia'
 import { uid } from 'quasar'
-import { Readability } from '@mozilla/readability'
-import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
+import { TabReference, TabReferenceType } from 'src/content/models/TabReference'
 import { TabAndTabsetId } from 'src/tabsets/models/TabAndTabsetId'
+import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
+import { computed, ref, watchEffect } from 'vue'
 
 /**
  * this content store is meant to track transient state of the currently opened tab.

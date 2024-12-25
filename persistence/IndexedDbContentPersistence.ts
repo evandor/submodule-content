@@ -1,6 +1,6 @@
 import { IDBPDatabase, openDB } from 'idb'
-import ContentPersistence from 'src/content/persistence/ContentPersistence'
 import { ContentItem } from 'src/content/models/ContentItem'
+import ContentPersistence from 'src/content/persistence/ContentPersistence'
 
 class IndexedDbContentPersistence implements ContentPersistence {
   private STORE_IDENT = 'content'
