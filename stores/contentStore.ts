@@ -73,6 +73,9 @@ export const useContentStore = defineStore('content', () => {
         var initialLength = pathSplit.length
         for (var i = 0; i < initialLength; i++) {
           // console.log("checking", i, pathSplit.length, pathSplit.join("/"))
+          if (protocol === 'chrome' || protocol === 'file') {
+            break
+          }
           try {
             const theURL = new URL(protocol + '://' + pathSplit.join('/'))
             // console.log("fetchging", theURL.toString())
