@@ -4,8 +4,6 @@ import { CheerioAPI } from 'cheerio'
 import { defineStore } from 'pinia'
 import { uid } from 'quasar'
 import { TabReference, TabReferenceType } from 'src/content/models/TabReference'
-import { TabAndTabsetId } from 'src/tabsets/models/TabAndTabsetId'
-import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
 import { computed, ref, watchEffect } from 'vue'
 
 /**
@@ -22,16 +20,17 @@ export const useContentStore = defineStore('content', () => {
   const currentTabReferences = ref<TabReference[]>([])
 
   const setCurrentTabContent = (content: string | undefined) => {
-    console.debug('setting current tab content with length ${content?.length}')
+    //console.debug(`setting current tab content with length ${content?.length}, ${content?.substring(0, 230)}`)
     content ? (currentTabContent.value = content) : ''
   }
 
   const setCurrentTabMetas = (metas: object = {}) => {
-    console.debug('setting current tab metas', metas)
+    //console.debug('setting current tab metas: #', Object.keys(metas).length)
     currentTabMetas.value = metas
   }
 
   const setCurrentTabUrl = (url: string | undefined) => {
+    //console.debug(`setting current tab url to '${url}'`)
     currentTabUrl.value = url
   }
 
@@ -43,94 +42,9 @@ export const useContentStore = defineStore('content', () => {
       checkLinks($)
       checkMeta($)
       checkScripts($)
-
-      //const sanitized = sanitizeAsHtml(currentTabContent.value)
-      const parser = new DOMParser()
-      const reader = new Readability(parser.parseFromString(currentTabContent.value, 'text/html'))
-      const article = reader.parse()
-      //console.log("article:", article)
-      article?.title ? (currentTabArticle.value = article) : (currentTabArticle.value = undefined)
-      if (currentTabUrl.value && currentTabUrl.value.indexOf('://') >= 0) {
-        // TODO can this be outdated?
-        const anchorSplit = currentTabUrl.value.split('#')
-        if (anchorSplit.length === 2) {
-          currentTabReferences.value.push(
-            new TabReference(
-              uid(),
-              TabReferenceType.ANCHOR,
-              anchorSplit[1]!,
-              [],
-              currentTabUrl.value,
-            ),
-          )
-        }
-        const protocol = currentTabUrl.value.split('://')[0]
-        const pathSplit = currentTabUrl.value
-          .split('://')[1]!
-          .split('/')
-          .filter((p) => p.trim() !== '')
-        const parentChainData = []
-        var initialLength = pathSplit.length
-        for (var i = 0; i < initialLength; i++) {
-          // console.log("checking", i, pathSplit.length, pathSplit.join("/"))
-          if (protocol === 'chrome' || protocol === 'file') {
-            break
-          }
-          try {
-            const theURL = new URL(protocol + '://' + pathSplit.join('/'))
-            // console.log("fetchging", theURL.toString())
-            const res = await fetch(theURL.toString(), { method: 'HEAD' })
-            const headers: any[] = []
-            res.headers.forEach((value, key, p) => {
-              headers.push({ [key]: value })
-            })
-            const responseAsJson = JSON.parse(
-              JSON.stringify({
-                ok: res.ok,
-                headers: headers,
-                redirected: res.redirected,
-                status: res.status,
-                type: res.type,
-              }),
-            )
-            // console.log("got", responseAsJson)
-            if (res.ok) {
-              parentChainData.push({
-                originalURL: currentTabUrl.value,
-                parent: theURL.toString(),
-                level: initialLength - i,
-                response: responseAsJson,
-              })
-            }
-          } catch (err) {
-            console.warn('===>', err)
-          }
-          pathSplit.pop()
-        }
-        if (parentChainData.length > 0) {
-          currentTabReferences.value.push(
-            new TabReference(
-              uid(),
-              TabReferenceType.PARENT_CHAIN,
-              'Parent Chain for ' + currentTabUrl.value,
-              parentChainData,
-              currentTabUrl.value,
-            ),
-          )
-        }
-
-        // update existing tabs with this url
-        useTabsetsStore()
-          .tabsForUrl(currentTabUrl.value)
-          .forEach((tabAndTsId: TabAndTabsetId) => {
-            const ts = useTabsetsStore().getTabset(tabAndTsId.tabsetId)
-            if (ts) {
-              // console.log(`setting tabReferences for tab url '${tabAndTsId.tab.url}' to ${JSON.stringify(currentTabReferences.value)}`)
-              tabAndTsId.tab.tabReferences = currentTabReferences.value
-              useTabsetsStore().saveTabset(ts)
-            }
-          })
-      }
+      checkArticle()
+      // worth it? has issues with repeated calls of this watchEffect block
+      // await checkPaths()
     }
   })
 
@@ -156,10 +70,8 @@ export const useContentStore = defineStore('content', () => {
             // ignore
           }
         }
-        currentTabReferences.value.push(
-          new TabReference(uid(), TabReferenceType.RSS, title || 'no title', [], useHref),
-        )
-        //console.log("Found TabReference", currentTabReferences.value)
+        currentTabReferences.value.push(new TabReference(uid(), TabReferenceType.RSS, title || 'no title', [], useHref))
+        //console.log('Found TabReference RSS', currentTabReferences.value.length, currentTabReferences.value)
       }
       if (
         rel &&
@@ -181,13 +93,7 @@ export const useContentStore = defineStore('content', () => {
             .then((text: string) => {
               console.log('found text', text)
               currentTabReferences.value.push(
-                new TabReference(
-                  uid(),
-                  TabReferenceType.OPEN_SEARCH,
-                  'opensearch',
-                  [{ xml: text }],
-                  href,
-                ),
+                new TabReference(uid(), TabReferenceType.OPEN_SEARCH, 'opensearch', [{ xml: text }], href),
               )
               console.log('Found TabReference', currentTabReferences.value)
             })
@@ -202,11 +108,7 @@ export const useContentStore = defineStore('content', () => {
     const openGraphRefs: object[] = []
     const metadataRefs: object[] = []
 
-    function addFromMeta(
-      identifier: string,
-      name: string | undefined,
-      content: string | undefined,
-    ) {
+    function addFromMeta(identifier: string, name: string | undefined, content: string | undefined) {
       if (name && name === identifier && content) {
         metadataRefs.push({ name, content })
         //console.log("Found TabReference for meta data", name, content)
@@ -229,12 +131,8 @@ export const useContentStore = defineStore('content', () => {
       addFromMeta('locale', name, content)
       addFromMeta('description', name, content)
     }
-    currentTabReferences.value.push(
-      new TabReference(uid(), TabReferenceType.OPEN_GRAPH, 'Open Graph', openGraphRefs),
-    )
-    currentTabReferences.value.push(
-      new TabReference(uid(), TabReferenceType.META_DATA, 'Meta Data', metadataRefs),
-    )
+    currentTabReferences.value.push(new TabReference(uid(), TabReferenceType.OPEN_GRAPH, 'Open Graph', openGraphRefs))
+    currentTabReferences.value.push(new TabReference(uid(), TabReferenceType.META_DATA, 'Meta Data', metadataRefs))
   }
 
   const checkScripts = ($: CheerioAPI) => {
@@ -256,6 +154,84 @@ export const useContentStore = defineStore('content', () => {
     }
   }
 
+  const checkArticle = () => {
+    //const sanitized = sanitizeAsHtml(currentTabContent.value)
+    const parser = new DOMParser()
+    const reader = new Readability(parser.parseFromString(currentTabContent.value, 'text/html'))
+    const article = reader.parse()
+    //console.log("article:", article)
+    article?.title ? (currentTabArticle.value = article) : (currentTabArticle.value = undefined)
+  }
+
+  const checkPaths = async () => {
+    if (currentTabUrl.value && currentTabUrl.value.indexOf('://') >= 0) {
+      // TODO can this be outdated?
+      const anchorSplit = currentTabUrl.value.split('#')
+      if (anchorSplit.length === 2) {
+        currentTabReferences.value.push(
+          new TabReference(uid(), TabReferenceType.ANCHOR, anchorSplit[1]!, [], currentTabUrl.value),
+        )
+      }
+      const protocol = currentTabUrl.value.split('://')[0]
+      let pathSplit: string[] = currentTabUrl.value
+        .split('://')[1]!
+        .split('/')
+        .filter((p) => p.trim() !== '')
+      const parentChainData = []
+      if (pathSplit.length > 0) {
+        pathSplit.pop()
+      }
+      var initialLength = pathSplit.length
+      for (var i = 0; i < initialLength; i++) {
+        console.log('checking', i, pathSplit.length, pathSplit.join('/'))
+        if (protocol === 'chrome' || protocol === 'file') {
+          break
+        }
+        try {
+          const theURL = new URL(protocol + '://' + pathSplit.join('/'))
+          console.log('fetchging', theURL.toString())
+          const res = await fetch(theURL.toString(), { method: 'HEAD' })
+          const headers: any[] = []
+          res.headers.forEach((value, key, p) => {
+            headers.push({ [key]: value })
+          })
+          const responseAsJson = JSON.parse(
+            JSON.stringify({
+              ok: res.ok,
+              headers: headers,
+              redirected: res.redirected,
+              status: res.status,
+              type: res.type,
+            }),
+          )
+          // console.log("got", responseAsJson)
+          if (res.ok) {
+            parentChainData.push({
+              originalURL: currentTabUrl.value,
+              parent: theURL.toString(),
+              level: initialLength - i,
+              response: responseAsJson,
+            })
+          }
+        } catch (err) {
+          console.warn('===>', err)
+        }
+        pathSplit.pop()
+      }
+      if (parentChainData.length > 0) {
+        currentTabReferences.value.push(
+          new TabReference(
+            uid(),
+            TabReferenceType.PARENT_CHAIN,
+            'Parent Chain for ' + currentTabUrl.value,
+            parentChainData,
+            currentTabUrl.value,
+          ),
+        )
+      }
+    }
+  }
+
   const resetCurrentTabArticle = () => (currentTabArticle.value = undefined)
 
   const getCurrentTabUrl = computed((): string | undefined => {
@@ -264,6 +240,7 @@ export const useContentStore = defineStore('content', () => {
 
   const getCurrentTabContent = computed((): string | undefined => currentTabContent.value)
   const getCurrentTabMetas = computed((): object => currentTabMetas.value)
+  const getCurrentTabReferences = computed((): TabReference[] => currentTabReferences.value)
 
   return {
     currentTabArticle,
@@ -275,5 +252,6 @@ export const useContentStore = defineStore('content', () => {
     setCurrentTabUrl,
     getCurrentTabUrl,
     currentTabReferences,
+    getCurrentTabReferences,
   }
 })

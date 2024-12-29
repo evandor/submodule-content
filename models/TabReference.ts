@@ -10,11 +10,7 @@ export enum TabReferenceType {
   SOURCE = 'SOURCE',
 }
 
-export enum TabReferenceStatus {
-  NEW = 'NEW',
-  IGNORED = 'IGNORED',
-  APPLIED = 'APPLIED',
-}
+export type TabReferenceStatus = 'NEW' | 'IGNORED' | 'APPLIED'
 
 export class TabReference {
   constructor(
@@ -23,6 +19,6 @@ export class TabReference {
     public title: string,
     public data: object[] = [],
     public href?: string,
-    public status: TabReferenceStatus = TabReferenceStatus.NEW,
+    public status: TabReferenceStatus = 'NEW',
   ) {}
 }
