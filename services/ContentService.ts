@@ -52,9 +52,7 @@ export function useContentService() {
     console.debug('saving content for tabId', tabId, metas)
     return db.saveContent(
       tabId,
-      JSON.parse(
-        JSON.stringify(new ContentItem(tabId, title, tabUrl || '', text, metas, tabsetIds)),
-      ),
+      JSON.parse(JSON.stringify(new ContentItem(tabId, title, tabUrl || '', text, metas, tabsetIds))),
     )
   }
 
