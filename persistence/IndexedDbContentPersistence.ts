@@ -13,7 +13,7 @@ class IndexedDbContentPersistence implements ContentPersistence {
 
   async init() {
     this.db = await this.initDatabase()
-    console.debug(` ...initialized content: ${this.getServiceName()}`, '✅')
+    // console.debug(` ...initialized content: ${this.getServiceName()}`, '✅')
     return Promise.resolve()
   }
 
