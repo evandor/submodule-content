@@ -71,7 +71,7 @@ class IndexedDbContentPersistence implements ContentPersistence {
     let result: object[] = []
     while (contentCursor) {
       if (contentCursor.value.expires !== 0) {
-        const exists: boolean = fnc(contentCursor.key.toString()) //this.urlExistsInATabset(atob(contentCursor.key.toString()))
+        const exists: boolean = fnc(contentCursor.key as string) //this.urlExistsInATabset(atob(contentCursor.key.toString()))
         if (exists) {
           const data = contentCursor.value
           data.expires = 0

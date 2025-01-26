@@ -49,7 +49,7 @@ export function useContentService() {
     title: string,
     tabsetIds: string[],
   ): Promise<any> => {
-    console.debug('saving content for tabId', tabId) //, metas)
+    //console.debug('saving content for tabId', tabId) //, metas)
     return db.saveContent(
       tabId,
       JSON.parse(JSON.stringify(new ContentItem(tabId, title, tabUrl || '', text, metas, tabsetIds))),
