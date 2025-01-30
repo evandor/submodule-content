@@ -75,14 +75,7 @@ export function useContentService() {
     return db.getContentFor(url)
   }
 
-  const initListeners = () => {
-    // console.log("*** init Listeners ***")
-    // if (inBexMode()) {
-    //   console.debug(" ...initializing thumbnails Listeners")
-    //   chrome.runtime.onMessage.addListener(onMessageListener)
-    //   chrome.tabs.onUpdated.addListener(onUpdatedListener)
-    // }
-  }
+  const initListeners = () => {}
 
   return {
     init,
