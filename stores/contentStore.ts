@@ -21,7 +21,7 @@ export const useContentStore = defineStore('content', () => {
 
   const setCurrentTabContent = (content: string | undefined) => {
     //console.debug(`setting current tab content with length ${content?.length}, ${content?.substring(0, 230)}`)
-    content ? (currentTabContent.value = content) : ''
+    currentTabContent.value = content ? content : ''
   }
 
   const setCurrentTabMetas = (metas: object = {}) => {
@@ -160,7 +160,7 @@ export const useContentStore = defineStore('content', () => {
     const reader = new Readability(parser.parseFromString(currentTabContent.value, 'text/html'))
     const article = reader.parse()
     //console.log("article:", article)
-    article?.title ? (currentTabArticle.value = article) : (currentTabArticle.value = undefined)
+    currentTabArticle.value = article?.title ? article : undefined
   }
 
   const checkPaths = async () => {
