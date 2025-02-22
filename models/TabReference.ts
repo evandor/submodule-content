@@ -8,6 +8,7 @@ export enum TabReferenceType {
   ANCHOR = 'ANCHOR',
   PARENT_CHAIN = 'PARENT_CHAIN',
   SOURCE = 'SOURCE',
+  DOCUMENTATION = 'DOCUMENTATION',
 }
 
 export type TabReferenceStatus = 'NEW' | 'IGNORED' | 'APPLIED'
