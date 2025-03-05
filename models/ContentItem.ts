@@ -1,5 +1,8 @@
+import { v5 as uuidv5 } from 'uuid'
+
 export class ContentItem {
   created: number
+  public contentHash: string = ''
 
   constructor(
     public id: string,
@@ -10,5 +13,10 @@ export class ContentItem {
     public tabsetIds: string[],
   ) {
     this.created = new Date().getTime()
+    this.contentHash = uuidv5(content, 'da42d8e8-2afd-446f-b72e-8b437aa03e46')
+  }
+
+  setContentHash(hash: string) {
+    this.contentHash = hash
   }
 }

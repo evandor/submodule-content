@@ -56,6 +56,10 @@ export function useContentService() {
     )
   }
 
+  const updateContent = (tabId: string, c: ContentItem) => {
+    return db.saveContent(tabId, JSON.parse(JSON.stringify(c)))
+  }
+
   const deleteContent = (tabId: string) => {
     return db.deleteContent(tabId)
   }
@@ -86,5 +90,6 @@ export function useContentService() {
     getContent,
     getContentFor,
     populateSearch,
+    updateContent,
   }
 }
