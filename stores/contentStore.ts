@@ -91,7 +91,7 @@ export const useContentStore = defineStore('content', () => {
           fetch(useUrl)
             .then((res) => res.text())
             .then((text: string) => {
-              console.log('found text', text)
+              // console.log('found text', text)
               currentTabReferences.value.push(
                 new TabReference(uid(), TabReferenceType.OPEN_SEARCH, 'opensearch', [{ xml: text }], href),
               )
