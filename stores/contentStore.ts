@@ -34,7 +34,7 @@ export const useContentStore = defineStore('content', () => {
     currentTabUrl.value = url
   }
 
-  watchEffect(async () => {
+  watchEffect(() => {
     currentTabReferences.value = []
     if (currentTabContent.value.trim().length > 0) {
       //console.debug('updating content store...')
