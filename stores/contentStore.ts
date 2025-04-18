@@ -20,17 +20,17 @@ export const useContentStore = defineStore('content', () => {
   const currentTabReferences = ref<TabReference[]>([])
 
   const setCurrentTabContent = (content: string | undefined) => {
-    //console.debug(`setting current tab content with length ${content?.length}, ${content?.substring(0, 230)}`)
+    console.debug(`setting current tab content with length ${content?.length}, ${content?.substring(0, 230)}`)
     currentTabContent.value = content ? content : ''
   }
 
   const setCurrentTabMetas = (metas: object = {}) => {
-    //console.debug('setting current tab metas: #', Object.keys(metas).length)
+    console.debug('setting current tab metas: #', Object.keys(metas).length)
     currentTabMetas.value = metas
   }
 
   const setCurrentTabUrl = (url: string | undefined) => {
-    //console.debug(`setting current tab url to '${url}'`)
+    console.debug(`setting current tab url to '${url}'`)
     currentTabUrl.value = url
   }
 
