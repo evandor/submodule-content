@@ -34,6 +34,13 @@ export const useContentStore = defineStore('content', () => {
     currentTabUrl.value = url
   }
 
+  const resetFor = (url: string | undefined) => {
+    currentTabUrl.value = url
+    currentTabContent.value = ''
+    currentTabMetas.value = {}
+    currentTabArticle.value = undefined
+  }
+
   watchEffect(() => {
     currentTabReferences.value = []
     if (currentTabContent.value.trim().length > 0) {
@@ -159,7 +166,7 @@ export const useContentStore = defineStore('content', () => {
     const parser = new DOMParser()
     const reader = new Readability(parser.parseFromString(currentTabContent.value, 'text/html'))
     const article = reader.parse()
-    //console.log("article:", article)
+    console.log('article:', article)
     currentTabArticle.value = article?.title ? article : undefined
   }
 
@@ -253,5 +260,6 @@ export const useContentStore = defineStore('content', () => {
     getCurrentTabUrl,
     currentTabReferences,
     getCurrentTabReferences,
+    resetFor,
   }
 })
