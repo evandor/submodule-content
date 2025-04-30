@@ -166,7 +166,7 @@ export const useContentStore = defineStore('content', () => {
     const parser = new DOMParser()
     const reader = new Readability(parser.parseFromString(currentTabContent.value, 'text/html'))
     const article = reader.parse()
-    console.log('article:', article)
+    //console.log('article:', article)
     currentTabArticle.value = article?.title ? article : undefined
   }
 
