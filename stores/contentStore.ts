@@ -4,6 +4,7 @@ import { CheerioAPI } from 'cheerio'
 import { defineStore } from 'pinia'
 import { uid } from 'quasar'
 import { TabReference, TabReferenceType } from 'src/content/models/TabReference'
+import BexFunctions from 'src/core/communication/BexFunctions'
 import { computed, ref, watchEffect } from 'vue'
 
 /**
@@ -34,11 +35,18 @@ export const useContentStore = defineStore('content', () => {
     currentTabUrl.value = url
   }
 
-  const resetFor = (url: string | undefined) => {
-    currentTabUrl.value = url
+  const resetFor = async (browserTab: chrome.tabs.Tab) => {
+    console.log('reset')
+    currentTabUrl.value = browserTab.url
     currentTabContent.value = ''
     currentTabMetas.value = {}
     currentTabArticle.value = undefined
+
+    if (browserTab.url) {
+      const r = await chrome.tabs.sendMessage(browserTab.id || 0, 'getExcerpt', {}) //, async (res) => {
+      console.log('getContent returned result with length', r, r?.html.length, browserTab.id)
+      await BexFunctions.handleBexTabExcerpt({ from: '', to: '', event: '', payload: r })
+    }
   }
 
   watchEffect(() => {
