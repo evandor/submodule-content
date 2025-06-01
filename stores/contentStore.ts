@@ -52,7 +52,7 @@ export const useContentStore = defineStore('content', () => {
   watchEffect(() => {
     currentTabReferences.value = []
     if (currentTabContent.value.trim().length > 0) {
-      console.debug('updating content store...')
+      console.debug(`updating content store... (length ${currentTabContent.value.trim().length})`)
       const $ = cheerio.load(currentTabContent.value)
       checkLinks($)
       checkMeta($)
