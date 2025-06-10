@@ -17,7 +17,11 @@ export const useContentStore = defineStore('content', () => {
   const currentTabContent = ref<string>('')
   const currentTabMetas = ref<object>({})
   const currentTabUrl = ref<string | undefined>(undefined)
+  const currentTabFavIcon = ref<string | undefined>(undefined)
+  const currentTabTitle = ref<string | undefined>(undefined)
+  const currentTabLastAccessed = ref<number | undefined>(undefined)
   const currentTabArticle = ref<object | undefined>(undefined)
+  const articleSnapshot = ref<object | undefined>(undefined)
   const currentTabReferences = ref<TabReference[]>([])
 
   const setCurrentTabContent = (content: string | undefined) => {
@@ -36,8 +40,11 @@ export const useContentStore = defineStore('content', () => {
   }
 
   const resetFor = async (browserTab: chrome.tabs.Tab) => {
-    console.log('reset')
+    console.log('reset', browserTab)
     currentTabUrl.value = browserTab.url
+    currentTabFavIcon.value = browserTab.favIconUrl
+    currentTabTitle.value = browserTab.title
+    currentTabLastAccessed.value = browserTab.lastAccessed
     currentTabContent.value = ''
     currentTabMetas.value = {}
     currentTabArticle.value = undefined
@@ -176,6 +183,9 @@ export const useContentStore = defineStore('content', () => {
     const article = reader.parse()
     //console.log('article:', article)
     currentTabArticle.value = article?.title ? article : undefined
+    if (currentTabArticle.value) {
+      articleSnapshot.value = currentTabArticle.value
+    }
   }
 
   const checkPaths = async () => {
@@ -269,5 +279,9 @@ export const useContentStore = defineStore('content', () => {
     currentTabReferences,
     getCurrentTabReferences,
     resetFor,
+    currentTabFavIcon,
+    currentTabMetas,
+    currentTabTitle,
+    articleSnapshot,
   }
 })
