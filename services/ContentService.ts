@@ -76,7 +76,7 @@ export function useContentService() {
   }
 
   const getContentFor = (url: string): Promise<ContentItem | undefined> => {
-    console.log('getting content for url', url)
+    //console.log('getting content for url', url)
     return db ? db.getContentFor(url) : Promise.resolve(undefined)
   }
 

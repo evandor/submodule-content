@@ -25,7 +25,7 @@ export const useContentStore = defineStore('content', () => {
   const currentTabReferences = ref<TabReference[]>([])
 
   const setCurrentTabContent = (content: string | undefined) => {
-    console.debug(`setting current tab content with length ${content?.length}, ${content?.substring(0, 230)}`)
+    //console.debug(`setting current tab content with length ${content?.length}, ${content?.substring(0, 230)}`)
     currentTabContent.value = content ? content : ''
   }
 
@@ -35,7 +35,7 @@ export const useContentStore = defineStore('content', () => {
   }
 
   const setCurrentTabUrl = (url: string | undefined) => {
-    console.debug(`setting current tab url to '${url}'`)
+    //console.debug(`setting current tab url to '${url}'`)
     currentTabUrl.value = url
   }
 
@@ -51,7 +51,7 @@ export const useContentStore = defineStore('content', () => {
 
     if (browserTab.url) {
       const r = await chrome.tabs.sendMessage(browserTab.id || 0, 'getExcerpt', {}) //, async (res) => {
-      console.log('getContent returned result with length', r, r?.html.length, browserTab.id)
+      //console.log('getContent returned result with length', r, r?.html.length, browserTab.id)
       await BexFunctions.handleBexTabExcerpt({ from: '', to: '', event: '', payload: r })
     }
   }
@@ -176,15 +176,15 @@ export const useContentStore = defineStore('content', () => {
     }
   }
 
+  //const sanitized = sanitizeAsHtml(currentTabContent.value)
   const checkArticle = () => {
-    //const sanitized = sanitizeAsHtml(currentTabContent.value)
     const parser = new DOMParser()
     const reader = new Readability(parser.parseFromString(currentTabContent.value, 'text/html'))
     const article = reader.parse()
-    console.log('article:', article)
     currentTabArticle.value = article?.title ? article : undefined
     if (currentTabArticle.value) {
       articleSnapshot.value = currentTabArticle.value
+      console.log('articleSnapshot:', articleSnapshot.value)
     }
   }
 
